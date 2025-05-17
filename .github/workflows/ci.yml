@@ -1,41 +1,47 @@
-name: Run Selenium Tests with Allure
+name: CI - Run Tests and Deploy Allure Report
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # Required to push to gh-pages branch
 
-    - name: Set up JDK 17
+    - name: Set up JDK 11
       uses: actions/setup-java@v3
       with:
-        java-version: '17'
-        distribution: 'temurin'
+        distribution: temurin
+        java-version: 11
 
-    - name: Set up Chrome
-      uses: browser-actions/setup-chrome@v1
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
 
-    - name: Install Maven dependencies
-      run: mvn clean install -DskipTests
-
-    - name: Run Tests
-      run: mvn test
+    - name: Run tests with Maven
+      run: mvn clean test
 
     - name: Generate Allure Report
       run: mvn allure:report
 
-    - name: Upload Allure Report
-      uses: actions/upload-artifact@v4
+    - name: Deploy Allure Report to gh-pages branch
+      uses: peaceiris/actions-gh-pages@v3
       with:
-        name: allure-report
-        path: target/site/allure-maven-plugin
-
-    - name: Upload Allure Results
-      uses: actions/upload-artifact@v4
-      with:
-        name: allure-results
-        path: target/allure-results
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./target/site/allure-maven-plugin
+        publish_branch: gh-pages
+        commit_message: "Automated Allure Report update [skip ci]"
