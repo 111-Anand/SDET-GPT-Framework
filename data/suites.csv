@@ -1,0 +1,3 @@
+"Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
+"passed","Sat May 17 10:41:15 IST 2025","Sat May 17 10:41:15 IST 2025","16","Surefire suite","Surefire test","SampleTest","SampleTest","testOne","testOne","Verify something important"
+"passed","Sat May 17 10:41:18 IST 2025","Sat May 17 10:41:18 IST 2025","422","Surefire suite","Surefire test","tests.LoginTest","tests.LoginTest","validLoginTest","Verify user can log in with valid username and password","Test to verify successful login using valid credentials."
