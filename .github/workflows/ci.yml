@@ -19,17 +19,15 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Set up Maven
-        uses: s4u/setup-maven-action@v1.10.0
-        with:
-          maven-version: '3.9.6'
+      - name: Build project and run tests with Maven
+        run: mvn clean test
 
-      - name: Build and generate Allure report
-        run: mvn clean test site
+      - name: Generate Allure Report
+        run: mvn allure:report
 
       - name: Deploy Allure report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
           publish_dir: ./target/site/allure-maven-plugin
+          publish_branch: gh-pages
