@@ -1,10 +1,7 @@
-name: CI - Run Tests and Deploy Allure Report
+name: CI - Build and Deploy Allure Report
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
     branches:
       - main
 
@@ -13,35 +10,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0  # Required to push to gh-pages branch
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up JDK 11
-      uses: actions/setup-java@v3
-      with:
-        distribution: temurin
-        java-version: 11
+      - name: Set up Java 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
-    - name: Cache Maven packages
-      uses: actions/cache@v3
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-
+      - name: Set up Maven
+        uses: s4u/setup-maven-action@v1.10.0
+        with:
+          maven-version: '3.9.6'
 
-    - name: Run tests with Maven
-      run: mvn clean test
+      - name: Build and generate Allure report
+        run: mvn clean test site
 
-    - name: Generate Allure Report
-      run: mvn allure:report
-
-    - name: Deploy Allure Report to gh-pages branch
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./target/site/allure-maven-plugin
-        publish_branch: gh-pages
-        commit_message: "Automated Allure Report update [skip ci]"
+      - name: Deploy Allure report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./target/site/allure-maven-plugin
