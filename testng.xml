@@ -1,0 +1,15 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="AI Test Framework Suite" verbose="1" parallel="false">
+
+    <listeners>
+        <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
+    </listeners>
+
+    <test name="SampleTests">
+        <classes>
+            <class name="tests.SampleTest"/>
+            <class name="tests.LoginTest"/>
+        </classes>
+    </test>
+
+</suite>
